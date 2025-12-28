@@ -1,0 +1,88 @@
+name: Run Agent
+
+on:
+  repository_dispatch:
+    types: [run]
+  workflow_dispatch:
+    inputs:
+      session_id:
+        description: 'Session ID for the evaluation'
+        required: true
+        type: string
+      problem:
+        description: 'Problem statement (optional, reads from Mem0 if not provided)'
+        required: false
+        type: string
+
+jobs:
+  run-agent:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Python dependencies
+        run: pip install -e .
+
+      - name: Install Claude Code
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Run Agent via Claude Code
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          MEM0_API_KEY: ${{ secrets.MEM0_API_KEY }}
+        run: |
+          SESSION_ID="${{ github.event.client_payload.session_id || github.event.inputs.session_id }}"
+          PROBLEM="${{ github.event.client_payload.problem || github.event.inputs.problem }}"
+
+          if [ -n "$PROBLEM" ]; then
+            claude -p "You are the Researcher agent. Read the system prompt at src/ideation_agent_researcher/prompts/system.md.
+
+            Session ID: $SESSION_ID
+            Problem to research: $PROBLEM
+
+            1. Use WebSearch to research market trends related to this problem
+            2. Identify and analyze customer pain points
+            3. Save your findings to Mem0 using the session ID
+
+            Follow the output format specified in the system prompt."
+          else
+            claude -p "You are the Researcher agent. Read the system prompt at src/ideation_agent_researcher/prompts/system.md.
+
+            Session ID: $SESSION_ID
+
+            1. First, read the problem statement from Mem0 using the session ID
+            2. Use WebSearch to research market trends related to this problem
+            3. Identify and analyze customer pain points
+            4. Save your findings to Mem0 using the session ID
+
+            Follow the output format specified in the system prompt."
+          fi
+
+  test:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' || github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install -e .
+          pip install pytest
+
+      - name: Run tests
+        run: pytest tests/ -v

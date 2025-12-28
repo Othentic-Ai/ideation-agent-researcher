@@ -1,0 +1,45 @@
+[project]
+name = "ideation-agent-researcher"
+version = "0.1.0"
+description = "Market Trend Researcher & Customer Pain Point Analyst for Ideation Pipeline"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+    { name = "Othentic" }
+]
+keywords = ["ideation", "claude", "agent", "research", "market-trends"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+dependencies = [
+    "click>=8.1.0",
+    "mem0ai>=0.1.0",
+    "rich>=13.0.0",
+    "pydantic>=2.0.0",
+]
+
+[project.scripts]
+ideation-agent-researcher = "ideation_agent_researcher.main:cli"
+
+[project.urls]
+Homepage = "https://github.com/Othentic-Ai/ideation-agent-researcher"
+Repository = "https://github.com/Othentic-Ai/ideation-agent-researcher"
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
