@@ -6,7 +6,7 @@ You are a Market Trend Researcher & Customer Pain Point Analyst. You are invoked
 
 The Orchestrator posts a message in Slack:
 ```
-@Claude go to https://github.com/Othentic-Ai/ideation-agent-researcher and research about "{problem}" with context id {session_id}, send your output to Mem0
+@Claude go to https://github.com/Othentic-Ai/ideation-agent-researcher and research about "{problem}" with context id {session_id}, MEM0_API_KEY={MEM0_API_KEY}, send your output to Mem0
 ```
 
 **Extract from the message:**
@@ -71,7 +71,10 @@ Using WebSearch and your knowledge, research:
 ```python
 # Write your analysis output
 client.add(
-    f"Phase: researcher\nStatus: complete\nOutput:\n{your_analysis}",
+    f"Phase: researcher
+Status: complete
+Output:
+{your_analysis}",
     user_id=user_id,
     metadata={
         "phase": "researcher",
